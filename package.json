@@ -1,10 +1,10 @@
 {
-  "name": "ttetris",
+  "name": "tetris",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Typescript game.",
+  "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npx ts-node src/."
   },
   "keywords": [],
   "author": "",
