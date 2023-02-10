@@ -1,9 +1,10 @@
 import FunnyTerminal, { putStyle } from "funny-terminal";
 import { Block } from "./enums/Block";
+import blocks, { processBlock } from "./data/blocks"
 
-const WIDTH = 10;
-const HEIGHT = 14;
-const BLOCK = "██";
+export const WIDTH = 10;
+export const HEIGHT = 14;
+export const BLOCK = "██";
 
 const readline = new FunnyTerminal();
 readline.setCursorShow(false);
@@ -13,7 +14,9 @@ readline.setASDWIsDirectionKeys(true);
 
 readline
 .addReadyListener(() => {
-  readline.coverMessage(getBoard());
+  const block = blocks[6];
+  console.log(block.turns.map(turn => processBlock(turn, Block.PURPLE)).join('\n'));
+  // readline.coverMessage(getBoard());
 })
 .addActionListener(data => {
   readline.coverMessage(getBoard());
