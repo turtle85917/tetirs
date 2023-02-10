@@ -1,4 +1,5 @@
 import { putStyle } from "funny-terminal";
+import { BlockColor } from "../enums/BlockColor";
 import { BLOCK } from "..";
 
 const blocks: Block[] = [
@@ -72,16 +73,15 @@ export default blocks;
 export function processBlock(shape: string, color: number) {
   const maxLength = Math.sqrt(shape.length);
   const chunk = shape.split(new RegExp(`\\B(?=(?:\\d{${maxLength}})+(?!\\d))`));
-  let result = '';
-  for (const item of chunk) {
-    for (let i = 0; i < item.length; i++) result += item[i] === '1' ? putStyle(BLOCK, color) : '  ';
-    result += '\n';
-  }
-
-  return result;
+  return chunk.map((item, y) => item.split('').map<Chunk>((_, index) => ({ item: putStyle(BLOCK, item[index] === '1' ? color : BlockColor.WHITE), position: [index, y] })));
 }
 
 interface Block {
   defaultShape: string;
   turns: string[];
+}
+
+interface Chunk {
+  item: string;
+  position: [number, number];
 }

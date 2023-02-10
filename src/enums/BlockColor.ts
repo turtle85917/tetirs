@@ -1,6 +1,6 @@
 import { TextStyle } from "funny-terminal";
 
-export enum Block {
+export enum BlockColor {
   BLACK = TextStyle.DIM,
   WHITE = TextStyle.F_WHITE,
   RED = TextStyle.F_RED,
