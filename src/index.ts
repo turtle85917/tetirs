@@ -1,6 +1,6 @@
 import FunnyTerminal, { putStyle } from "funny-terminal";
-import { BlockColor } from "./enums/BlockColor";
 import blocks, { processBlock } from "./data/blocks";
+import { BlockColor } from "./enums/BlockColor";
 
 export const WIDTH = 10;
 export const HEIGHT = 14;
@@ -16,7 +16,7 @@ readline.setASDWIsDirectionKeys(true);
 
 readline
 .addReadyListener(() => {
-  tetris.push({ blockIndex: 6, shapeIndex: 0, position: [5, 5] });
+  tetris.push({ blockIndex: 0, shapeIndex: 1, position: [5, -3] });
   readline.coverMessage(getBoard());
 })
 .addActionListener(data => {
@@ -35,12 +35,13 @@ function getBoard() {
 
   for (const item of tetris) {
     const currentBlock = blocks[item.blockIndex];
-    const image = processBlock(currentBlock.defaultShape, BlockColor.PURPLE);
+    const shape = currentBlock.turns[item.shapeIndex] ?? currentBlock.defaultShape;
+    const image = processBlock(shape, BlockColor.PURPLE).slice(item.position[1] < 0 ? Math.abs(item.position[1]) : 0);
     for (const part of image) {
       for (const deepPart of part) {
         const partX = item.position[0] + deepPart.position[0];
         const partY = item.position[1] + deepPart.position[1];
-        result[partY][partX] = deepPart.item;
+        result[partY+1][partX] = deepPart.item;
       }
     }
   }
