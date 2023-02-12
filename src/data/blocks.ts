@@ -71,10 +71,26 @@ const blocks: Block[] = [
 export default blocks;
 
 export function processBlock(shape: string, color: number) {
-  const maxLength = Math.sqrt(shape.length);
+  const maxLength = getShapeMaxSize(shape);
   const chunk = shape.split(new RegExp(`\\B(?=(?:\\d{${maxLength}})+(?!\\d))`));
-  return chunk.map((item, y) => item.split('').map<Chunk>((_, index) => ({ item: putStyle(BLOCK, item[index] === '1' ? color : BlockColor.WHITE), position: [index, y] })));
+  return chunk.map((item, y) => item.split('').filter((char, index, array) => {
+    const top = chunk[y-1]?.split('') ?? [];
+    const bottom = chunk[y+1]?.split('') ?? [];
+    const left = array[index-1];
+    const right = array[index+1];
+    return char === '1' || (sameValue('1', top[index], bottom[index]) && sameValue('1', left, right));
+  }).map<Chunk>((_, index) => ({ item: putStyle(BLOCK, item[index] === '1' ? color : BlockColor.GREEN), position: [index, y] })));
 }
+
+function sameValue<T = string>(compare: T, ...args: T[]) {
+  return args.includes(compare);
+}
+
+export const getBlockShape = (blockIndex: number, shapeIndex: number) => blocks[blockIndex].turns[shapeIndex];
+
+export const getShapeMaxSize = (shape: string) => Math.sqrt(shape.length);
+
+export const getShapeSize = (image: Chunk[][]): [number, number] => [image.length, image[0].length];
 
 interface Block {
   defaultShape: string;

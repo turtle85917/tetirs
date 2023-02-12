@@ -1,5 +1,5 @@
 import FunnyTerminal, { putStyle } from "funny-terminal";
-import blocks, { processBlock } from "./data/blocks";
+import { getBlockShape, getShapeSize, processBlock } from "./data/blocks";
 import { BlockColor } from "./enums/BlockColor";
 
 export const WIDTH = 10;
@@ -16,8 +16,19 @@ readline.setASDWIsDirectionKeys(true);
 
 readline
 .addReadyListener(() => {
-  tetris.push({ blockIndex: 0, shapeIndex: 1, position: [5, -3] });
+  tetris.push({ blockIndex: 0, shapeIndex: 1, position: [5, -4] });
   readline.coverMessage(getBoard());
+
+  setInterval(() => {
+    for (const item of tetris) {
+      const shape = getBlockShape(item.blockIndex, item.shapeIndex);
+      const image = processBlock(shape, BlockColor.PURPLE);
+      const size = getShapeSize(image);
+      item.position[1]++;
+      if (item.position[1]+2 === HEIGHT-size[1]) item.position[1]--;
+      readline.coverMessage(getBoard());
+    }
+  }, 1200);
 })
 .addActionListener(data => {
   readline.coverMessage(getBoard());
@@ -34,8 +45,7 @@ function getBoard() {
   }
 
   for (const item of tetris) {
-    const currentBlock = blocks[item.blockIndex];
-    const shape = currentBlock.turns[item.shapeIndex] ?? currentBlock.defaultShape;
+    const shape = getBlockShape(item.blockIndex, item.shapeIndex);
     const image = processBlock(shape, BlockColor.PURPLE).slice(item.position[1] < 0 ? Math.abs(item.position[1]) : 0);
     for (const part of image) {
       for (const deepPart of part) {
