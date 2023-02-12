@@ -7,5 +7,5 @@ export enum BlockColor {
   BLUE = TextStyle.F_BLUE,
   GREEN = TextStyle.F_GREEN,
   YELLOW = TextStyle.F_YELLOW,
-  PURPLE = TextStyle.F_MAGENTA,
+  PURPLE = TextStyle.F_MAGENTA
 }

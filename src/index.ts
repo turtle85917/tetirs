@@ -16,21 +16,38 @@ readline.setASDWIsDirectionKeys(true);
 
 readline
 .addReadyListener(() => {
-  tetris.push({ blockIndex: 0, shapeIndex: 1, position: [5, -4] });
+  tetris.push({ blockIndex: 0, shapeIndex: 1, status: "target", position: [5, -4] });
   readline.coverMessage(getBoard());
 
   setInterval(() => {
     for (const item of tetris) {
+      if (item.status !== "target") continue;
       const shape = getBlockShape(item.blockIndex, item.shapeIndex);
-      const image = processBlock(shape, BlockColor.PURPLE);
+      const image = processBlock(shape, item.status);
       const size = getShapeSize(image);
       item.position[1]++;
-      if (item.position[1]+2 === HEIGHT-size[1]) item.position[1]--;
+      if (item.position[1]-1 === HEIGHT-size[1]) {
+        item.position[1]--;
+        item.status = "dummy";
+      }
       readline.coverMessage(getBoard());
     }
   }, 1200);
 })
 .addActionListener(data => {
+  const strength = data.name === "left" ? -1 : data.name === "right" ? 1 : 0;
+  if (strength === 0) {
+    readline.coverMessage(getBoard());
+    return;
+  }
+  const target = tetris.find(item => item.status === "target");
+  if (target) {
+    const shape = getBlockShape(target.blockIndex, target.shapeIndex);
+    const image = processBlock(shape, target.status);
+    const size = getShapeSize(image);
+    target.position[0] += strength;
+    if (target.position[0] < 1 || target.position[0] > WIDTH-size[0]+1) target.position[0] -= strength;
+  }
   readline.coverMessage(getBoard());
 });
 
@@ -46,7 +63,7 @@ function getBoard() {
 
   for (const item of tetris) {
     const shape = getBlockShape(item.blockIndex, item.shapeIndex);
-    const image = processBlock(shape, BlockColor.PURPLE).slice(item.position[1] < 0 ? Math.abs(item.position[1]) : 0);
+    const image = processBlock(shape, item.status).slice(item.position[1] < 0 ? Math.abs(item.position[1]) : 0);
     for (const part of image) {
       for (const deepPart of part) {
         const partX = item.position[0] + deepPart.position[0];
@@ -62,5 +79,6 @@ function getBoard() {
 interface Tetris {
   blockIndex: number;
   shapeIndex: number;
+  status: "target" | "dummy" | "shadow";
   position: [number, number];
 }
